@@ -1,0 +1,6 @@
+Pods/*
+.idea/*
+*.lock
+*.xcworkspace
+*.swp
+
