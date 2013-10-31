@@ -48,18 +48,18 @@ __attribute__((overloadable)) Binding* binding(NSObject* object1, NSString* path
 
 -(id)init{
     if(self = [super init]){
-        self.value = [NSNull null];
+        self.value = nil;
     }
     return self;
 }
 
 -(void)setValue:(NSObject*)value{
-    if(value == nil){
-        value = [NSNull null];
+    if(value == [NSNull null]){
+        value = nil;
     }
 
     NSObject *prevValue = _value;
-    if([prevValue isEqual:value]){
+    if(prevValue == value || [prevValue isEqual:value]){
         return;
     }
     _value = value;
@@ -71,12 +71,12 @@ __attribute__((overloadable)) Binding* binding(NSObject* object1, NSString* path
     NSObject *value1 = [_object1 valueForKeyPath:_keyPath1];
     NSObject *value2 = [_object2 valueForKeyPath:_keyPath2];
 
-    if(value1 == nil){
-        value1 = [NSNull null];
+    if(value1 == [NSNull null]){
+        value1 = nil;
     }
 
-    if(value2 == nil){
-        value2 = [NSNull null];
+    if(value2 == [NSNull null]){
+        value2 = nil;
     }
 
     if(self.value2ToValue1Block){
@@ -99,12 +99,12 @@ __attribute__((overloadable)) Binding* binding(NSObject* object1, NSString* path
         }
     }
     else{
-        if(_value == [NSNull null]){
-            if((NSNull *)value1 != [NSNull null]){
+        if(_value == nil){
+            if(value1 != nil){
                 [_object1 setValue:_value forKeyPath:_keyPath1];
             }
 
-            if((NSNull *)value2 != [NSNull null]){
+            if(value2 != nil){
                 if(self.value1ToValue2Block){
                     [_object2 setValue:self.value1ToValue2Block(_value) forKeyPath:_keyPath2];
                 }
