@@ -59,7 +59,7 @@ Pod::Spec.new do |s|
   #  Supports git, hg, svn and HTTP.
   #
 
-  s.source       = { :git => "https://github.com/shuoli84/Glue.git", :tag => "0.0.1" }
+  s.source       = { :git => "https://github.com/shuoli84/Glue.git" }
 
 
   # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #

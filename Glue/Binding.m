@@ -46,7 +46,18 @@ __attribute__((overloadable)) Binding* binding(NSObject* object1, NSString* path
     NSString* _identifier2;
 }
 
+-(id)init{
+    if(self = [super init]){
+        self.value = [NSNull null];
+    }
+    return self;
+}
+
 -(void)setValue:(NSObject*)value{
+    if(value == nil){
+        value = [NSNull null];
+    }
+
     NSObject *prevValue = _value;
     if([prevValue isEqual:value]){
         return;
@@ -57,8 +68,17 @@ __attribute__((overloadable)) Binding* binding(NSObject* object1, NSString* path
 
 -(void)syncValue{
     NSLog(@"Sync value called");
-    NSObject* value1 = [_object1 valueForKeyPath:_keyPath1];
+    NSObject *value1 = [_object1 valueForKeyPath:_keyPath1];
     NSObject *value2 = [_object2 valueForKeyPath:_keyPath2];
+
+    if(value1 == nil){
+        value1 = [NSNull null];
+    }
+
+    if(value2 == nil){
+        value2 = [NSNull null];
+    }
+
     if(self.value2ToValue1Block){
         value2 = self.value2ToValue1Block(value2);
     }
@@ -79,12 +99,12 @@ __attribute__((overloadable)) Binding* binding(NSObject* object1, NSString* path
         }
     }
     else{
-        if([_value isEqual:[NSNull null]]){
-            if(![value1 isEqual:[NSNull null]]){
+        if(_value == [NSNull null]){
+            if((NSNull *)value1 != [NSNull null]){
                 [_object1 setValue:_value forKeyPath:_keyPath1];
             }
 
-            if(![value2 isEqual:[NSNull null]]){
+            if((NSNull *)value2 != [NSNull null]){
                 if(self.value1ToValue2Block){
                     [_object2 setValue:self.value1ToValue2Block(_value) forKeyPath:_keyPath2];
                 }
