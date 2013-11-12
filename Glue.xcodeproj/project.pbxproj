@@ -224,7 +224,7 @@
 				ORGANIZATIONNAME = "Li Shuo";
 				TargetAttributes = {
 					9CBEC8661820CD07002FE3FB = {
-						TestTargetID = 9CBEC8421820CD07002FE3FB /* Glue */;
+						TestTargetID = 9CBEC8421820CD07002FE3FB;
 					};
 				};
 			};
@@ -239,8 +239,6 @@
 			mainGroup = 9CBEC83A1820CD07002FE3FB;
 			productRefGroup = 9CBEC8441820CD07002FE3FB /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-			);
 			projectRoot = "";
 			targets = (
 				9CBEC8421820CD07002FE3FB /* Glue */,
@@ -484,6 +482,7 @@
 				GCC_PREFIX_HEADER = "Glue/Glue-Prefix.pch";
 				INFOPLIST_FILE = "Glue/Glue-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = 2;
 				USER_HEADER_SEARCH_PATHS = "\"${PROJECT_DIR}/Pods\"/**";
 				WRAPPER_EXTENSION = app;
 			};
@@ -499,6 +498,7 @@
 				GCC_PREFIX_HEADER = "Glue/Glue-Prefix.pch";
 				INFOPLIST_FILE = "Glue/Glue-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = 2;
 				USER_HEADER_SEARCH_PATHS = "\"${PROJECT_DIR}/Pods\"/**";
 				WRAPPER_EXTENSION = app;
 			};
@@ -567,6 +567,7 @@
 				9CBEC87A1820CD07002FE3FB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		9CBEC87B1820CD07002FE3FB /* Build configuration list for PBXNativeTarget "GlueTests" */ = {
 			isa = XCConfigurationList;
@@ -575,6 +576,7 @@
 				9CBEC87D1820CD07002FE3FB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

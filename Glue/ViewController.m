@@ -39,23 +39,42 @@
     self.binders = [NSMutableArray array];
 
     Contact *contact = [Contact new];
-    contact.name = @"";
+    contact.name = @"100";
     self.contact = contact;
 
+    UILabel *title1 = [UILabel.alloc initWithFrame:CGRectMake(20, 20, 80, 40)];
+    title1.text = @"title";
+    [self.view addSubview:title1];
     UILabel *label1 = [[UILabel alloc] initWithFrame:CGRectMake(100, 20, 300, 40)];
-    UITextField *textField1 = [[UITextField alloc] initWithFrame:CGRectMake(100, 80, 300, 40)];
-
-    UILabel *label2 = [[UILabel alloc] initWithFrame:CGRectMake(100, 50, 300, 40)];
-    UILabel *label3 = [[UILabel alloc] initWithFrame:CGRectMake(100, 120, 300, 40)];
-
+    label1.backgroundColor = [UIColor colorWithRed:52/255.f green:152/255.f blue:219/255.f alpha:1.f];
+    label1.textColor = [UIColor whiteColor];
     [self.binders addObject:binding(contact, @"name", label1, @"text")];
-    Binding *editing = binding(contact, @"name", textField1, @"text");
-    [self.binders addObject:editing];
-    [textField1 addEventHandler:^(UITextField *sender) {
-        editing.value = sender.text;
-    } forControlEvents:UIControlEventEditingChanged];
-
+    [self.view addSubview:label1];
+    
+    UILabel *title2 = [UILabel.alloc initWithFrame:CGRectMake(20, 70, 80, 40)];
+    title2.text = @"frame";
+    [self.view addSubview:title2];
+    UILabel *label2 = [[UILabel alloc] initWithFrame:CGRectMake(100, 70, 300, 40)];
+    Binding *animBinding = binding(contact, @"name", ^(NSObject *value){
+        [UIView animateWithDuration:0.3 animations:^{
+            CGFloat v = [(NSString*)value floatValue];
+            CGRect f = label2.frame;
+            f.origin.x = v;
+            label2.frame = f;
+        }];
+    });
+    [self.binders addObject:animBinding];
+    [self.view addSubview:label2];
+    
+    {
+        UILabel *title2 = [UILabel.alloc initWithFrame:CGRectMake(20, 120, 80, 40)];
+        title2.text = @"alpha";
+        [self.view addSubview:title2];
+    }
+    UILabel *label3 = [[UILabel alloc] initWithFrame:CGRectMake(100, 120, 300, 40)];
+    label3.backgroundColor = [UIColor colorWithRed:46/255.f green:204/255.f blue:113/255.f alpha:1.f];
     [self.binders addObject:binding(contact, @"name", label2, @"text")];
+    [self.view addSubview:label3];
     [self.binders addObject:binding(contact, @"name", label3, @"text", ^(NSObject* value1){
         int value = [(NSString*)value1 integerValue];
         return [NSString stringWithFormat:@"%d", value];
@@ -65,12 +84,34 @@
         return [NSString stringWithFormat:@"%d", value];
     },
     nil)];
-
+    Binding *animBinding2 = binding(contact, @"name", ^(NSObject *value){
+        [UIView animateWithDuration:0.3 animations:^{
+            CGFloat v = [(NSString*)value floatValue];
+            label3.alpha = v/500;
+            label3.alpha = MAX(0.3, label3.alpha);
+        }];
+    });
+    [self.binders addObject:animBinding2];
+    
+    
+    {
+        UILabel *title2 = [UILabel.alloc initWithFrame:CGRectMake(20, 170, 80, 40)];
+        title2.text = @"edit it";
+        [self.view addSubview:title2];
+    }
+    UITextField *textField1 = [[UITextField alloc] initWithFrame:CGRectMake(100, 170, 300, 40)];
+    [self.binders addObject:binding(contact, @"name", textField1, @"text")];
+    typeof(self) __weak weakSelf = self;
+    [textField1 addEventHandler:^(UITextField *sender) {
+        weakSelf.contact.name = sender.text;
+    } forControlEvents:UIControlEventEditingChanged];
+    [self.view addSubview:textField1];
+    
     {
         UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
         button.backgroundColor = [UIColor redColor];
-        button.frame = CGRectMake(30, 100, 40, 40);
-        button.titleLabel.text = @"press";
+        button.frame = CGRectMake(100, 220, 80, 40);
+        [button setTitle:@"1+" forState:UIControlStateNormal];
         [button addEventHandler:^(id sender) {
             label1.text = [NSString stringWithFormat:@"%@%@", label1.text,@"1"];
         } forControlEvents:UIControlEventTouchUpInside];
@@ -81,24 +122,24 @@
 
     {
         UIButton *button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-        button.frame = CGRectMake(60, 100, 40, 40);
-        button.backgroundColor = [UIColor greenColor];
-        button.tintColor = [UIColor greenColor];
+        button.frame = CGRectMake(100, 270, 80, 40);
+        button.backgroundColor = [UIColor colorWithRed:26/255.f green:188/255.f blue:156/255.f alpha:1.f];
+        [button setTitle:@"+2" forState:UIControlStateNormal];
         [button setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
         [button addEventHandler:^(id sender) {
             label3.text = [NSString stringWithFormat:@"%d", label3.text.integerValue + 2];
         } forControlEvents:UIControlEventTouchUpInside];
 
-        UIButton* __weak weakButton = button;
-        [self.binders addObject: binding(contact, @"name", ^(NSObject* value){
-            [weakButton setTitle:(NSString *)value forState:UIControlStateNormal];
-        })];
-
         [self.view addSubview:button];
     }
 
-    UILabel *formatedLabel = [[UILabel alloc] initWithFrame:CGRectMake(100, 20, 300, 30)];
-
+    
+    {
+        UILabel *title2 = [UILabel.alloc initWithFrame:CGRectMake(20, 320, 80, 40)];
+        title2.text = @"format";
+        [self.view addSubview:title2];
+    }
+    UILabel *formatedLabel = [[UILabel alloc] initWithFrame:CGRectMake(100, 320, 300, 30)];
     Binding *formatedBinding = binding(contact, @"name", formatedLabel, @"text", ^(NSObject *value1){
         NSString* string = (NSString*)value1;
         int integer = string.integerValue;
@@ -122,51 +163,56 @@
     [self.binders addObject:formatedBinding];
 
     [self.view addSubview:formatedLabel];
-
-
-    [self.view addSubview:label1];
-    [self.view addSubview:label2];
-    [self.view addSubview:label3];
-    [self.view addSubview:textField1];
     
-    Binding *animBinding = binding(contact, @"name", ^(NSObject *value){
-        [UIView animateWithDuration:0.3 animations:^{
-            CGFloat v = [(NSString*)value floatValue];
-            CGRect f = label1.frame;
-            f.origin.x = v;
-            label1.frame = f;
-        }];
-    });
-    [self.binders addObject:animBinding];
     
-    Binding *animBinding2 = binding(contact, @"name", ^(NSObject *value){
-        [UIView animateWithDuration:0.3 animations:^{
-            CGFloat v = [(NSString*)value floatValue];
-            label1.alpha = v/500;
-        }];
-    });
-    [self.binders addObject:animBinding2];
-    
+    {
+        UILabel *title2 = [UILabel.alloc initWithFrame:CGRectMake(20, 350, 300, 40)];
+        title2.text = @"Pan gesture, try it by pan on view";
+        [self.view addSubview:title2];
+    }
     UIPanGestureRecognizer *panGestureRecognizer = [UIPanGestureRecognizer.alloc initWithHandler:^(UIGestureRecognizer *sender, UIGestureRecognizerState state, CGPoint location) {
+        static float start;
         static CGPoint startPoint;
         if(state == UIGestureRecognizerStateBegan){
+            start = contact.name.floatValue;
             startPoint = location;
         }
         else{
-            CGPoint t = CGPointMake(location.x - startPoint.x, location.y - startPoint.y);
-            contact.name = [NSString stringWithFormat:@"%d", (int)t.x];
+            float v = location.x - startPoint.x + start;
+            contact.name = [NSString stringWithFormat:@"%d", (int)v];
             
             if(state == UIGestureRecognizerStateEnded){
-                if(location.x > 300){
+                if(contact.name.integerValue > 300){
                     contact.name = [NSString stringWithFormat:@"%d", 500];
                 }
                 else{
-                    contact.name = @"0";
+                    contact.name = @"100";
                 }
             }
         }
     }];
     [self.view addGestureRecognizer:panGestureRecognizer];
+    
+    {
+        UILabel *title2 = [UILabel.alloc initWithFrame:CGRectMake(20, 400, 300, 40)];
+        title2.text = @"dynamic content in scroll view";
+        [self.view addSubview:title2];
+    }
+    UIScrollView *scrollView = [UIScrollView.alloc initWithFrame:CGRectMake(100, 450, 500, 500)];
+    scrollView.backgroundColor = [UIColor grayColor];
+    
+    scrollView.contentSize = CGSizeMake(500, 2000);
+    
+    {
+        UILabel *label1 = [UILabel.alloc initWithFrame:CGRectMake(0, 500, 500, 50)];
+        [scrollView addSubview:label1];
+        
+        Binding *binding1 = binding(scrollView, @"contentOffset", ^(NSObject*value){
+            label1.text = [NSString stringWithFormat:@"%f", [(NSValue*)value CGPointValue].y];
+        });
+        [self.binders addObject:binding1];
+    }
+    [self.view addSubview:scrollView];
 }
 
 - (void)didReceiveMemoryWarning
