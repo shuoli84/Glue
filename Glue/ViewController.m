@@ -10,6 +10,7 @@
 #import "Binding.h"
 #import "UIControl+BlocksKit.h"
 #import "NSObject+BlockObservation.h"
+#import "UIGestureRecognizer+BlocksKit.h"
 
 
 @interface Contact : NSObject
@@ -127,6 +128,45 @@
     [self.view addSubview:label2];
     [self.view addSubview:label3];
     [self.view addSubview:textField1];
+    
+    Binding *animBinding = binding(contact, @"name", ^(NSObject *value){
+        [UIView animateWithDuration:0.3 animations:^{
+            CGFloat v = [(NSString*)value floatValue];
+            CGRect f = label1.frame;
+            f.origin.x = v;
+            label1.frame = f;
+        }];
+    });
+    [self.binders addObject:animBinding];
+    
+    Binding *animBinding2 = binding(contact, @"name", ^(NSObject *value){
+        [UIView animateWithDuration:0.3 animations:^{
+            CGFloat v = [(NSString*)value floatValue];
+            label1.alpha = v/500;
+        }];
+    });
+    [self.binders addObject:animBinding2];
+    
+    UIPanGestureRecognizer *panGestureRecognizer = [UIPanGestureRecognizer.alloc initWithHandler:^(UIGestureRecognizer *sender, UIGestureRecognizerState state, CGPoint location) {
+        static CGPoint startPoint;
+        if(state == UIGestureRecognizerStateBegan){
+            startPoint = location;
+        }
+        else{
+            CGPoint t = CGPointMake(location.x - startPoint.x, location.y - startPoint.y);
+            contact.name = [NSString stringWithFormat:@"%d", (int)t.x];
+            
+            if(state == UIGestureRecognizerStateEnded){
+                if(location.x > 300){
+                    contact.name = [NSString stringWithFormat:@"%d", 500];
+                }
+                else{
+                    contact.name = @"0";
+                }
+            }
+        }
+    }];
+    [self.view addGestureRecognizer:panGestureRecognizer];
 }
 
 - (void)didReceiveMemoryWarning

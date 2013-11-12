@@ -67,7 +67,6 @@ __attribute__((overloadable)) Binding* binding(NSObject* object1, NSString* path
 }
 
 -(void)syncValue{
-    NSLog(@"Sync value called");
     NSObject *value1 = [_object1 valueForKeyPath:_keyPath1];
     NSObject *value2 = [_object2 valueForKeyPath:_keyPath2];
 
@@ -152,6 +151,9 @@ __attribute__((overloadable)) Binding* binding(NSObject* object1, NSString* path
     typeof(self) __weak weakSelf = self;
     _identifier2 = [object addObserverForKeyPath:keyPath options:NSKeyValueObservingOptionNew task:^(id obj, NSDictionary *change) {
         NSObject *value = change[NSKeyValueChangeNewKey];
+        if(weakSelf.value2ToValue1Block){
+            value = weakSelf.value2ToValue1Block(value);
+        }
         weakSelf.value = value;
     }];
 }
