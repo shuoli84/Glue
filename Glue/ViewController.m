@@ -100,6 +100,7 @@
         [self.view addSubview:title2];
     }
     UITextField *textField1 = [[UITextField alloc] initWithFrame:CGRectMake(100, 170, 300, 40)];
+    textField1.borderStyle = UITextBorderStyleLine;
     [self.binders addObject:binding(contact, @"name", textField1, @"text")];
     typeof(self) __weak weakSelf = self;
     [textField1 addEventHandler:^(UITextField *sender) {
