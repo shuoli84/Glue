@@ -13,6 +13,85 @@
 #import "UIGestureRecognizer+BlocksKit.h"
 
 
+@interface ScrollAnimEntry : NSObject
+@property (nonatomic, strong) NSObject *object;
+@property (nonatomic, strong) NSString *keypath;
+@property (nonatomic, assign) CGFloat fromValue;
+@property (nonatomic, assign) CGFloat toValue;
+@property (nonatomic, assign) CGFloat currentValue;
+@property (nonatomic, assign) CGPoint startContentOffset;
+@property (nonatomic, assign) CGPoint endContentOffset;
+
++(ScrollAnimEntry*)entryWithObject:(NSObject*)object
+                           keyPath:(NSString*)keyPath
+                              from:(CGFloat)fromValue
+                                to:(CGFloat)toValue
+                startContentOffset:(CGPoint)startContentOffset
+                  endContentOffset:(CGPoint)endContentOffset;
+
+-(CGFloat)valueForContentOffset:(CGPoint)contentOffset;
+
+-(void)setContentOffset:(CGPoint)contentOffset;
+@end
+
+@implementation ScrollAnimEntry
+
++(ScrollAnimEntry*)entryWithObject:(NSObject *)object keyPath:(NSString *)keyPath from:(CGFloat)fromValue to:(CGFloat)toValue startContentOffset:(CGPoint)startContentOffset endContentOffset:(CGPoint)endContentOffset{
+    ScrollAnimEntry *entry = [ScrollAnimEntry.alloc init];
+    entry.object = object;
+    entry.keypath = keyPath;
+    entry.fromValue = fromValue;
+    entry.toValue = toValue;
+    entry.startContentOffset = startContentOffset;
+    entry.endContentOffset = endContentOffset;
+    return entry;
+}
+
+-(CGFloat)valueForContentOffset:(CGPoint)contentOffset{
+    float ys = _startContentOffset.y;
+    float ye = _endContentOffset.y;
+    float y = contentOffset.y;
+    float ration = (y - ys) / (ye - ys);
+    if(ration < 0){
+        return INFINITY;
+    }
+    else{
+        return _fromValue + (_toValue - _fromValue) * ration;
+    }
+}
+
+-(void)setContentOffset:(CGPoint)contentOffset{
+    float v = [self valueForContentOffset:contentOffset];
+    if(v == INFINITY){
+        return;
+    }
+    _currentValue = v;
+    [_object setValue:@(_currentValue) forKey:_keypath];
+}
+@end
+
+@interface ScrollAnim : NSObject
+@property (nonatomic, strong) NSMutableArray *animEntries;
+
+-(void)setContentOffset:(CGPoint)contentOffset;
+@end
+
+@implementation ScrollAnim
+-(id)init{
+    if((self = super.init)){
+        self.animEntries = [NSMutableArray array];
+    }
+    return self;
+}
+
+-(void)setContentOffset:(CGPoint)contentOffset{
+    for(ScrollAnimEntry *entry in _animEntries){
+        [entry setContentOffset:contentOffset];
+    }
+}
+
+@end
+
 @interface Contact : NSObject
 
 @property (nonatomic, strong) NSString* name;
@@ -27,6 +106,7 @@
 @interface ViewController ()
 @property (nonatomic, strong) Contact* contact;
 @property (nonatomic, strong) NSMutableArray* binders;
+@property (nonatomic, strong) ScrollAnim* anim;
 @end
 
 @implementation ViewController
@@ -35,6 +115,8 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
+    
+    self.anim = [ScrollAnim.alloc init];
 
     self.binders = [NSMutableArray array];
 
@@ -202,6 +284,11 @@
     UIScrollView *scrollView = [UIScrollView.alloc initWithFrame:CGRectMake(100, 450, 500, 500)];
     scrollView.backgroundColor = [UIColor grayColor];
     
+    [self.anim.animEntries addObjectsFromArray:@[
+                                                 [ScrollAnimEntry entryWithObject:label1 keyPath:@"alpha" from:0.3 to:1.0 startContentOffset:CGPointMake(0, 0) endContentOffset:CGPointMake(0, 300)],
+                                                 [ScrollAnimEntry entryWithObject:label2 keyPath:@"alpha" from:0.2 to:0.8 startContentOffset:CGPointMake(0, 0) endContentOffset:CGPointMake(0, 300)],
+                                                 ]];
+    
     scrollView.contentSize = CGSizeMake(500, 2000);
     
     {
@@ -209,7 +296,11 @@
         [scrollView addSubview:label1];
         
         Binding *binding1 = binding(scrollView, @"contentOffset", ^(NSObject*value){
-            label1.text = [NSString stringWithFormat:@"%f", [(NSValue*)value CGPointValue].y];
+            CGPoint offset = [(NSValue*)value CGPointValue];
+            label1.frame = CGRectMake(offset.y, offset.y, 500, 50);
+            label1.text = [NSString stringWithFormat:@"%f", offset.y];
+            
+            [weakSelf.anim setContentOffset:offset];
         });
         [self.binders addObject:binding1];
     }

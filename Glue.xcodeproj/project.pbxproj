@@ -224,7 +224,7 @@
 				ORGANIZATIONNAME = "Li Shuo";
 				TargetAttributes = {
 					9CBEC8661820CD07002FE3FB = {
-						TestTargetID = 9CBEC8421820CD07002FE3FB;
+						TestTargetID = 9CBEC8421820CD07002FE3FB /* Glue */;
 					};
 				};
 			};
