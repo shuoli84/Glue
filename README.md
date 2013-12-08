@@ -10,6 +10,10 @@ What Glue did is create 2 observers, 1 for A, the other for B, when any value ch
 update both A & B's value. It will only set object's value if the new value and original value are different,
 this prevents recursive setting loop. 
 
+Example
+-------------------------
+![screenshot](https://raw.github.com/shuoli84/Glue/master/screenshot.gif "Screen shot")
+
 Bind property for objects
 -------------------------
 Bind contact's name to a label, which is a common task we do everyday.
