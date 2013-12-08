@@ -5,7 +5,8 @@
 
 
 #import "Binding.h"
-#import "NSObject+BlockObservation.h"
+#import "UIControl+BlocksKit.h"
+#import "NSObject+BKBlockObservation.h"
 
 __attribute__((overloadable)) Binding* binding(NSObject* object1, NSString* pathKey1, NSObject* object2, NSString* pathKey2){
     return binding(object1, pathKey1, object2, pathKey2, nil, nil, nil);
@@ -138,7 +139,7 @@ __attribute__((overloadable)) Binding* binding(NSObject* object1, NSString* path
     _keyPath1 = keyPath;
 
     typeof(self) __weak weakSelf = self;
-    _identifier1 = [object addObserverForKeyPath:keyPath options:NSKeyValueObservingOptionNew task:^(id obj, NSDictionary *change) {
+    _identifier1 = [object bk_addObserverForKeyPath:keyPath options:NSKeyValueObservingOptionNew task:^(id obj, NSDictionary *change) {
         NSObject *value = change[NSKeyValueChangeNewKey];
         weakSelf.value = value;
     }];
@@ -149,7 +150,7 @@ __attribute__((overloadable)) Binding* binding(NSObject* object1, NSString* path
     _keyPath2 = keyPath;
 
     typeof(self) __weak weakSelf = self;
-    _identifier2 = [object addObserverForKeyPath:keyPath options:NSKeyValueObservingOptionNew task:^(id obj, NSDictionary *change) {
+    _identifier2 = [object bk_addObserverForKeyPath:keyPath options:NSKeyValueObservingOptionNew task:^(id obj, NSDictionary *change) {
         NSObject *value = change[NSKeyValueChangeNewKey];
         if(weakSelf.value2ToValue1Block){
             value = weakSelf.value2ToValue1Block(value);
@@ -161,12 +162,12 @@ __attribute__((overloadable)) Binding* binding(NSObject* object1, NSString* path
 -(void)dealloc{
     NSObject *object1 = _object1;
     if(object1){
-        [object1 removeObserversWithIdentifier:_identifier1];
+        [object1 bk_removeObserversWithIdentifier:_identifier1];
     }
 
     NSObject *object2 = _object2;
     if(object2){
-        [object2 removeObserversWithIdentifier:_identifier2];
+        [object2 bk_removeObserversWithIdentifier:_identifier2];
     }
 }
 @end

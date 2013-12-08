@@ -9,7 +9,6 @@
 #import "ViewController.h"
 #import "Binding.h"
 #import "UIControl+BlocksKit.h"
-#import "NSObject+BlockObservation.h"
 #import "UIGestureRecognizer+BlocksKit.h"
 
 
@@ -185,7 +184,7 @@
     textField1.borderStyle = UITextBorderStyleLine;
     [self.binders addObject:binding(contact, @"name", textField1, @"text")];
     typeof(self) __weak weakSelf = self;
-    [textField1 addEventHandler:^(UITextField *sender) {
+    [textField1 bk_addEventHandler:^(UITextField * sender) {
         weakSelf.contact.name = sender.text;
     } forControlEvents:UIControlEventEditingChanged];
     [self.view addSubview:textField1];
@@ -195,7 +194,7 @@
         button.backgroundColor = [UIColor redColor];
         button.frame = CGRectMake(100, 220, 80, 40);
         [button setTitle:@"1+" forState:UIControlStateNormal];
-        [button addEventHandler:^(id sender) {
+        [button bk_addEventHandler:^(id sender) {
             label1.text = [NSString stringWithFormat:@"%@%@", label1.text,@"1"];
         } forControlEvents:UIControlEventTouchUpInside];
         button.tintColor = [UIColor redColor];
@@ -209,7 +208,7 @@
         button.backgroundColor = [UIColor colorWithRed:26/255.f green:188/255.f blue:156/255.f alpha:1.f];
         [button setTitle:@"+2" forState:UIControlStateNormal];
         [button setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-        [button addEventHandler:^(id sender) {
+        [button bk_addEventHandler:^(id sender) {
             label3.text = [NSString stringWithFormat:@"%d", label3.text.integerValue + 2];
         } forControlEvents:UIControlEventTouchUpInside];
 
@@ -253,7 +252,7 @@
         title2.text = @"Pan gesture, try it by pan on view";
         [self.view addSubview:title2];
     }
-    UIPanGestureRecognizer *panGestureRecognizer = [UIPanGestureRecognizer.alloc initWithHandler:^(UIGestureRecognizer *sender, UIGestureRecognizerState state, CGPoint location) {
+    UIPanGestureRecognizer *panGestureRecognizer = [UIPanGestureRecognizer.alloc bk_initWithHandler:^(UIGestureRecognizer *sender, UIGestureRecognizerState state, CGPoint location) {
         static float start;
         static CGPoint startPoint;
         if(state == UIGestureRecognizerStateBegan){
