@@ -9,25 +9,53 @@
 #import "NSObject+BKBlockObservation.h"
 
 __attribute__((overloadable)) Binding* binding(NSObject* object1, NSString* pathKey1, NSObject* object2, NSString* pathKey2){
-    return binding(object1, pathKey1, object2, pathKey2, nil, nil, nil);
+    return binding(object1, pathKey1, object2, pathKey2, nil, nil, nil, nil, nil);
 }
 
 __attribute__((overloadable)) Binding* binding(NSObject* object1, NSString* pathKey1, void (^valueUpdateBlock)(NSObject *)){
-    return binding(object1, pathKey1, nil, nil, nil, nil, nil, valueUpdateBlock);
+    return binding(object1, pathKey1, nil, nil, nil, nil, nil, valueUpdateBlock, nil);
 }
 
 
 __attribute__((overloadable)) Binding* binding(NSObject* object1, NSString* pathKey1, NSObject* object2, NSString* pathKey2, NSObject* (^value1ToValue2Block)(NSObject*), NSObject* (^value2ToValue1Block)(NSObject*), NSComparator comparator){
-    return binding(object1, pathKey1, object2, pathKey2, value1ToValue2Block, value2ToValue1Block, comparator, nil);
+    return binding(object1, pathKey1, object2, pathKey2, value1ToValue2Block, value2ToValue1Block, comparator, nil, nil);
 }
 
 __attribute__((overloadable)) Binding* binding(NSObject* object1, NSString* pathKey1, NSObject* object2, NSString* pathKey2, NSObject* (^value1ToValue2Block)(NSObject*), NSObject* (^value2ToValue1Block)(NSObject*), NSComparator comparator, void (^valueUpdateBlock)(NSObject*)){
+    return binding(object1, pathKey1, object2, pathKey2, value1ToValue2Block, value2ToValue1Block, comparator, valueUpdateBlock, nil);
+}
+
+__attribute__((overloadable)) Binding* binding(NSObject* object1, NSString* pathKey1, NSObject* object2, NSString* pathKey2, BOOL (^filterBlock)(NSObject*)){
+    return binding(object1, pathKey1, object2, pathKey2, nil, nil, nil, filterBlock);
+}
+
+__attribute__((overloadable)) Binding* binding(NSObject* object1, NSString* pathKey1, void (^valueUpdateBlock)(NSObject *), BOOL (^filterBlock)(NSObject*)){
+    return binding(object1, pathKey1, nil, nil, nil, nil, nil, valueUpdateBlock, filterBlock);
+}
+
+__attribute__((overloadable)) Binding* binding(NSObject* object1, NSString* pathKey1, NSObject* object2, NSString* pathKey2, NSObject* (^value1ToValue2Block)(NSObject*), NSObject* (^value2ToValue1Block)(NSObject*), NSComparator comparator, BOOL (^filterBlock)(NSObject*)){
+    return binding(object1, pathKey1, object2, pathKey2, value1ToValue2Block, value2ToValue1Block, comparator, nil, filterBlock);
+}
+
+__attribute__((overloadable)) Binding* binding(
+                                               NSObject* object1,
+                                               NSString* pathKey1,
+                                               NSObject* object2,
+                                               NSString* pathKey2,
+                                               NSObject* (^value1ToValue2Block)(NSObject*),
+                                               NSObject* (^value2ToValue1Block)(NSObject*),
+                                               NSComparator comparator,
+                                               void (^valueUpdateBlock)(NSObject*),
+                                               BOOL (^filterBlock)(NSObject*)){
 
     Binding *binder = [[Binding alloc]init];
     binder.comparator = comparator;
     binder.valueUpdateBlock = valueUpdateBlock;
+    binder.filterBlock = filterBlock;
 
-    [binder setObject1:object1 keyPath:pathKey1];
+    if(object1 != nil){
+        [binder setObject1:object1 keyPath:pathKey1];
+    }
 
     if(object2 != nil){
         binder.value1ToValue2Block = value1ToValue2Block;
@@ -58,9 +86,13 @@ __attribute__((overloadable)) Binding* binding(NSObject* object1, NSString* path
     if(value == [NSNull null]){
         value = nil;
     }
-
+    
     NSObject *prevValue = _value;
     if(prevValue == value || [prevValue isEqual:value]){
+        return;
+    }
+    
+    if(self.filterBlock && !self.filterBlock(value)){
         return;
     }
     _value = value;

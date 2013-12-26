@@ -182,10 +182,21 @@
     }
     UITextField *textField1 = [[UITextField alloc] initWithFrame:CGRectMake(100, 170, 300, 40)];
     textField1.borderStyle = UITextBorderStyleLine;
-    [self.binders addObject:binding(contact, @"name", textField1, @"text")];
+    Binding *binder = binding(contact, @"name", textField1, @"text", ^BOOL(NSObject *v){
+        NSString *stringValue = (NSString*)v;
+        if(stringValue.length == 0){
+            return NO;
+        }
+        char firstLetter = [stringValue characterAtIndex:0];
+        if (!(firstLetter >= '0' && firstLetter <= '9')){
+            return NO;
+        }
+        return YES;
+    });
+    [self.binders addObject:binder];
     typeof(self) __weak weakSelf = self;
     [textField1 bk_addEventHandler:^(UITextField * sender) {
-        weakSelf.contact.name = sender.text;
+        binder.value = sender.text;
     } forControlEvents:UIControlEventEditingChanged];
     [self.view addSubview:textField1];
     
